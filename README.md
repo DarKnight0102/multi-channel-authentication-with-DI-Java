@@ -10,7 +10,7 @@ Authentication in a web application is the process of proving the user is the pe
 
 The usual process is that a user provides one of the above (one factor authentication) or two of the above (2 factors authentication) to the system. The system compared the proof the user provided with the one stored in the system. If the 2 matches, the user is authenticated.
 
-This tutorial serves as a demo for using multi-channel authentication in the java environment.The goal is that when a new authentication channel is added, we just need to throw the new implementation jar into the system's classpath, add the new channel into the configuration file, the new authentication will be picked up automatically without modifying the code of the system.
+This tutorial serves as a demo for using multi-channel authentication in the java environment. The goal is that when a new authentication channel is added, we just need to throw the new implementation jar into the system's classpath, add the new channel into the configuration file, the new authentication will be picked up automatically without modifying the code of the system.
 
 ## Programming Languages and Tools
 
@@ -32,9 +32,9 @@ Web Container: Apache Tomcat.
 
 ### Authentication
 
-In this demo, we will only focus on the username/password based authentication. There are different channels to do a password based authentication. The most common ones are store the user credentials in a local database, or LDAP, third party O'Auth. Sometimes, some organization intranet applications will require the convenience of auto login with Windows ID authentication or Linux login ID.
+In this demo, we will only focus on the username/password based authentication. There are different channels to do a password based authentication. The most common ones are store the user credentials in a local database, or LDAP, third party OAuth. Sometimes, some organization intranet applications will require the convenience of auto login with Windows ID authentication or Linux login ID.
 
-We are only to demo the usage of the authentication with a password. .
+We are only to demo the usage of the authentication with a password.
 
  
 
@@ -50,19 +50,19 @@ As previously mentioned, the database that will be used is MySQL. A user has man
 - First Name: String
 - Last Name: String
 
-Of the above, only email and password are mandatory. The others are optional because for third party OAuth, our system does not store the first name, last name, and password, which are stored in the third party's system. Why we still keep an email address? this is because there are 2 kinds of authorization with third party Oauth. One is that the system is open to any person who is a memberof the third party.Another one is that third party Oauth is only to do the authentication, only the person registered in our own system can access it. That is the system is not open to everybody of the third party member but the selected member. We are doing the later one. So email addressis mandatory to make sure the person has access to the system.
+Of the above, only email and password are mandatory. The others are optional because for third party OAuth, our system does not store the first name, last name, and password, which are stored in the third party's system. Why we still keep an email address? this is because there are 2 kinds of authorization with third party OAuth. One is that the system is open to any person who is a member of the third party.Another one is that third party OAuth is only to do the authentication, only the person registered in our own system can access it. That is the system is not open to everybody of the third party member but the selected member. We are doing the later one. So email addresses mandatory to make sure the person has access to the system.
 
 It is important that before storing passwords into the database that they are encrypted. We will be using BCrypt&#39;s one-way hash as our encryptor. Because this method is one-way, if a user forgets their password, they will have to reset it rather than retrieve it.
 
-Salt is optional but mandatory for OAuth which is used to store the returned token from the third party
+Salt is optional but mandatory for OAuth which is used to store the returned token from the third party.
 
-### Dependency Injection (DJ)
+### Dependency Injection (DI)
 
 We will be using dependency injection to dynamically inject a channel to use when the user wants to authenticate themselves. In Java, this requires four main parts:
 
 #### Interface
 
-Interface in DJ define the service. We will called it IAuthenticate.
+Interface in DJ define the service. We will call it IAuthenticate.
 
 There is a challenge here is that some authentication such as local database or LDAP authentication has the username and password passed as parameter, but some authentication such as third party O'Auth has no such parameters passed. We are going to overcome the challenge by designing the API which takes a parameter as an object called UserCredential, which has username and password as fields. For the channels which does not need username and password, the UserCredential object will be null.
 
@@ -77,7 +77,7 @@ public interface IAuthentiate {
 ```
 #### Service Class
 
-Here they are the authentication classes that which encapsulated authentication logic. It is also the extending point for new authentication channels. Each channels has its own authentication logic. When a new channel need to be added, a new service class will be created and add into the classpath. Service classimplements the interface. We are going to have the following classes:
+Here they are the authentication classes that which encapsulated authentication logic. It is also the extending point for new authentication channels. Each channels has its own authentication logic. When a new channel needs to be added, a new service class will be created and add into the classpath. Service class implements the interface. We are going to have the following classes:
 
 - MySQLAuthenticate
 - GoogleAuthenticate
@@ -85,7 +85,7 @@ Here they are the authentication classes that which encapsulated authentication 
 
 #### Injector
 
-Injector is responsible for constructing the services and injecting them into the client. To make it more fleible the factory pattern will be used to create the service object. To make it configurable, the service objects will be stored in a properties file ApplicationResources.properties. To improve the performance, the service objects created will be cached so that the service objects only need to be created one time. Then the injector will inject the service object from the factory cache. We will call the factory AuthenticateFactory.java
+Injector is responsible for constructing the services and injecting them into the client. To make it more flexible the factory pattern will be used to create the service object. To make it configurable, the service objects will be stored in a properties file ApplicationResources.properties. To improve the performance, the service objects created will be cached so that the service objects only need to be created one time. Then the injector will inject the service object from the factory cache. We will call the factory AuthenticateFactory.java
 
 #### Client
 
@@ -138,7 +138,7 @@ Now that we&#39;ve created a properties file, we want to be able to read the fil
 
 There are varied ways to implement this ResourceLoader. The basic intuition is to create a bunch of getter and setter methods to get and set each of the properties. However, this is very inefficient. Because some big system may got hundreds of configuration entry, and then we need to create hundreds of getter/setter pairs.
 
-A better intuition is to create a map that stores all the keys and values, and for each entry, we get the entry name clearly and put them into the map one by one. For example, we can do some thing like
+A better intuition is to create a map that stores all the keys and values, and for each entry, we get the entry name clearly and put them into the map one by one. For example, we can do something like
 
     ......
     String firstName = prop.getProperty("firstName");
@@ -149,7 +149,7 @@ A better intuition is to create a map that stores all the keys and values, and f
    
 but this is still not good enough if there are many properties in the file.
 
-We want to create a solution that will read the and work for alll kinds of properties file and load the properties from the file the same way no matter how many elements they have and whatever properties they are. We will still use a map to store the keys and values, To improve the performance, we will cache it because usually properties file usuallu does not change during runtime.
+We want to create a solution that will read the and work for alll kinds of properties file and load the properties from the file the same way no matter how many elements they have and whatever properties they are. We will still use a map to store the keys and values, To improve the performance, we will cache it because usually properties file usually does not change during runtime.
 
 ### Create User Classes and Models
 
@@ -205,7 +205,7 @@ Like with google, edit the contents of application.properties after creating you
 
 Then create a file called FacebookAuthenticate in /src/main/java/com/bill/security/authentication.
 
-Just like with Google, we will need to send a request to facebooks servers to get an access\_token. Facebook is a little easier in that it only requires 4 parameters:
+Just like with Google, we will need to send a request to facebook's servers to get an access\_token. Facebook is a little easier in that it only requires 4 parameters:
 
 - client\_id
 - redirect\_uri
