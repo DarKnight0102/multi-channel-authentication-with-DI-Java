@@ -1,23 +1,23 @@
 authenticationclasses: com.bill.security.authentication.MySQLAuthenticate,com.bill.security.authentication.GoogleAuthenticate,com.bill.security.authentication.FacebookAuthenticate
 authenticationurls: /login/mySQL,/register,/login/google,/login/facebook
-dbURL: jdbc:mysql://localhost:3306/multichannelauth
-dbUser: hubi
+dbURL: jdbc:mysql://hubidb.ckanvfhiy4r6.us-east-2.rds.amazonaws.com:3306/hubi
+dbUser: admin
 dbPassword: Gu0s0ng_who_$
 
-googleId: 316649002787-pj5ruij4ppogj900cppl4sjjn4ov06c2.apps.googleusercontent.com
+googleId: 316649002787-pj5ruij4ppogj900cppl4sjjn4ov06c2.apps.googleusercontent.com/multi-channel-auth
 googleSecret: zKr-gkjsVnxut-zTZoSxO0aN
 facebookId: 151036816561758
 facebookSecret: 51e9973ddef335ace3d039015fac0f4f
 
 spring:
     datasource:
-        url: jdbc:mysql://localhost:3306/multichannelauth?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
-        username: hubi
+        url: jdbc:mysql://hubidb.ckanvfhiy4r6.us-east-2.rds.amazonaws.com:3306/hubi
+        username: admin
         password: Gu0s0ng_who_$
 
     jpa:
         hibernate:
-            ddl-auto: none
+            ddl-auto: create
         properties:
             hibernate:
                 format-sql: true
